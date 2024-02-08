@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using CodeAnnotationTool.NotionProvider;
@@ -13,7 +15,7 @@ namespace CodeAnnotationTool
     /// </summary>
     public partial class ToolWindow1Control : UserControl
     {
-        private const int textSelectionCharOffsetDelta = 6;
+        private const int textSelectionCharOffsetDelta = 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ToolWindow1Control"/> class.
@@ -25,7 +27,7 @@ namespace CodeAnnotationTool
 
         private void OkButton_OnClick(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Got ok button click");
+            Debug.WriteLine("OK BUTTON ON CLICK:");
             Debug.WriteLine($"Got text: {this.TextInput.Text}");
 
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -47,20 +49,33 @@ namespace CodeAnnotationTool
 
                 Debug.WriteLine($"Selected text: {textSelection.Text}");
 
+                var topEditPoint = topPoint.CreateEditPoint();
+                topEditPoint.StartOfLine();
+                var lineText = topEditPoint.GetText(topEditPoint.LineLength);
+                int lineLengthBeforeSelection = topPoint.AbsoluteCharOffset - topEditPoint.AbsoluteCharOffset;
 
-                INotionProvider notionProvider = (INotionProvider) Package.GetGlobalService(typeof(INotionProvider));
+                // Calculate the number of spaces before the selected text starts
+                var spacesCount = lineText.Take(lineLengthBeforeSelection).Count(char.IsWhiteSpace);
+
+                Debug.WriteLine($"Spaces count: {spacesCount}");
+
+                CachedNotionProvider notionProvider = (CachedNotionProvider) Package.GetGlobalService(typeof(CachedNotionProvider));
                 if (notionProvider != null)
                 {
                     NotionInfo notion = new NotionInfo()
                     {
-                        AbsoluteCharOffsetBeginning = topPoint.AbsoluteCharOffset + textSelectionCharOffsetDelta,
-                        AbsoluteCharOffsetEnding = bottomPoint.AbsoluteCharOffset + textSelectionCharOffsetDelta,
+                        AbsoluteCharOffsetBeginning = topPoint.AbsoluteCharOffset + spacesCount,
+                        AbsoluteCharOffsetEnding = bottomPoint.AbsoluteCharOffset + spacesCount,
                         Key = dte.ActiveDocument.FullName,
                         LinesCount = textSelection.BottomLine - textSelection.TopLine + 1,
-                        Text = this.TextInput.Text,
+                        Text = TextInput.Text,
                     };
 
                     notionProvider.SaveNotion(notion);
+                }
+                else
+                {
+                    Debug.WriteLine("Failed to obtain cached notion provider.");
                 }
             }
             else

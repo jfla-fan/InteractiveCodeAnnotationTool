@@ -31,6 +31,8 @@ namespace CodeAnnotationTool
         // This is called on a background thread.
         public Task<QuickInfoItem> GetQuickInfoItemAsync(IAsyncQuickInfoSession session, CancellationToken cancellationToken)
         {
+            Debug.WriteLine("GET QUICK INFO ITEM ASYNC:");
+
             var triggerPoint = session.GetTriggerPoint(_textBuffer.CurrentSnapshot);
 
             if (triggerPoint != null)
@@ -69,10 +71,10 @@ namespace CodeAnnotationTool
                 int cursorPosition = position - _cursorDeltaCharOffset;
                 string showText = null;
 
-                var notionProvider = (INotionProvider) Package.GetGlobalService(typeof(INotionProvider));
+                var notionProvider = (CachedNotionProvider) Package.GetGlobalService(typeof(CachedNotionProvider));
                 if (notionProvider != null)
                 {
-                    Debug.WriteLine("Got notion provider in line async quick info source.");
+                    Debug.WriteLine("Got notion provider in line async quick info source.");    
                     if (document != null && document.FilePath != null)
                     {
                         foreach (var notion in notionProvider.FindNotions(document.FilePath))

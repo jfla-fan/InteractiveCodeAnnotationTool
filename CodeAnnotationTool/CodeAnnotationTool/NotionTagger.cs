@@ -37,6 +37,8 @@ namespace CodeAnnotationTool
             if (_notionProvider is null || _dte is null || _dte.ActiveDocument is null || _dte.ActiveDocument.FullName is null)
                 yield return null;
 
+            Debug.WriteLine("GET TAGS:");
+
             string documentPath = _dte.ActiveDocument.FullName;
 
             IList<NotionInfo> notions = _notionProvider.FindNotions(documentPath).ToList();

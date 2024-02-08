@@ -61,7 +61,7 @@ namespace CodeAnnotationTool
 
                 Debug.WriteLine($"Solution dir path inside lambda: {solutionDirPath}");
 
-                ((IServiceContainer)this).AddService(typeof(INotionProvider),
+                ((IServiceContainer)this).AddService(typeof(CachedNotionProvider),
                     new CachedNotionProvider(Path.Combine(solutionDirPath, FileStorageName)),
                     true);
             }
@@ -73,7 +73,7 @@ namespace CodeAnnotationTool
         {
             if (disposing)
             {
-                INotionProvider notionProvider = (INotionProvider) GetService(typeof(INotionProvider));
+                CachedNotionProvider notionProvider = (CachedNotionProvider) GetService(typeof(CachedNotionProvider));
                 notionProvider?.Dispose();
             }
         }

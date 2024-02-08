@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
@@ -100,6 +101,7 @@ namespace CodeAnnotationTool.NotionProvider
         public void Dispose()
         {
             Flush();
+            Debug.WriteLine("CachedNotionProvider: disposed.");
         }
     }
 }

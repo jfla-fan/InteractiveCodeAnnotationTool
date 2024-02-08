@@ -26,7 +26,7 @@ namespace CodeAnnotationTool
                 throw new ArgumentNullException(nameof(buffer));
             }
 
-            INotionProvider notionProvider = (INotionProvider) Package.GetGlobalService(typeof(INotionProvider));
+            CachedNotionProvider notionProvider = (CachedNotionProvider) Package.GetGlobalService(typeof(CachedNotionProvider));
             DTE dte = (DTE) Package.GetGlobalService(typeof(DTE));
             
             return new NotionTagger(notionProvider, dte) as ITagger<T>;
